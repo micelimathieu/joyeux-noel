@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joyeux Noël !</title>
     <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             background-color: #0f172a; 
@@ -16,24 +17,21 @@
             position: relative;
         }
 
-        /* --- NOUVEAU: Le Traîneau --- */
         #sleigh-container {
             position: absolute;
-            top: 5vh; /* Position verticale en haut de l'écran */
-            left: -100vw; /* Position de départ hors écran à gauche */
+            top: 5vh; 
+            left: -100vw; 
             font-size: 3em;
             white-space: nowrap;
-            /* Z-index 9: Devant la neige (1), derrière le contenu principal (10) */
             z-index: 9; 
-            animation: none; /* L'animation est démarrée par JS */
+            animation: none; 
         }
         
         @keyframes flyAcross {
-            0% { transform: translateX(0vw); } /* Départ hors écran à gauche */
-            100% { transform: translateX(200vw); } /* Arrivée hors écran à droite */
+            0% { transform: translateX(0vw); } 
+            100% { transform: translateX(200vw); } 
         }
         
-        /* Conteneur Flex pour Sapin et Paroles */
         #main-content {
             display: flex;
             align-items: center; 
@@ -47,24 +45,95 @@
             z-index: 10;
         }
 
-        /* ... Styles du Sapin, des Boules, des Paroles, et de l'Overlay (inchangés) ... */
+        /* --- Styles du Sapin de Noël --- */
         .tree-wrapper { flex-shrink: 0; padding-bottom: 50px; }
         .tree-container { position: relative; animation: sway 3s infinite ease-in-out alternate; transform: scale(1.5); }
-        .star { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 20px solid #fbbf24; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); filter: drop-shadow(0 0 10px #fbbf24); z-index: 10; }
-        .layer { width: 0; height: 0; border-left: solid transparent; border-right: solid transparent; border-bottom: solid #166534; position: absolute; left: 50%; transform: translateX(-50%); }
+        .star { 
+            width: 0; height: 0; 
+            border-left: 10px solid transparent; 
+            border-right: 10px solid transparent; 
+            border-bottom: 20px solid #fbbf24; 
+            position: absolute; 
+            top: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            filter: drop-shadow(0 0 10px #fbbf24); 
+            z-index: 10; 
+        }
+        .layer { 
+            width: 0; height: 0; 
+            border-left: solid transparent; 
+            border-right: solid transparent; 
+            border-bottom: solid #166534; 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+        }
         .layer-1 { border-left-width: 30px; border-right-width: 30px; border-bottom-width: 40px; top: 0; z-index: 3; }
         .layer-2 { border-left-width: 50px; border-right-width: 50px; border-bottom-width: 60px; top: 20px; z-index: 2; }
         .layer-3 { border-left-width: 70px; border-right-width: 70px; border-bottom-width: 80px; top: 50px; z-index: 1; }
         .trunk { width: 20px; height: 30px; background: #451a03; position: absolute; top: 130px; left: 50%; transform: translateX(-50%); }
         .bauble { width: 8px; height: 8px; border-radius: 50%; position: absolute; animation: blink 1s infinite step-end; }
-        .b1 { background: red; top: 35px; left: -10px; } .b2 { background: gold; top: 65px; left: 15px; animation-delay: 0.3s; } .b3 { background: red; top: 90px; left: -25px; animation-delay: 0.6s; }
-        #lyrics-container { font-size: 2.5rem; text-align: left; width: 40%; min-height: 80px; padding: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.5); transition: opacity 0.5s ease; opacity: 0; }
+        .b1 { background: red; top: 35px; left: -10px; } 
+        .b2 { background: gold; top: 65px; left: 15px; animation-delay: 0.3s; } 
+        .b3 { background: red; top: 90px; left: -25px; animation-delay: 0.6s; }
+        /* --- Fin Styles du Sapin --- */
+        
+        #lyrics-container { 
+            font-size: 2.5rem; 
+            text-align: left; 
+            width: 40%; 
+            min-height: 80px; 
+            padding: 20px; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.5); 
+            transition: opacity 0.5s ease; 
+            opacity: 0; 
+            line-height: 1.5; 
+            color: #fff;
+            position: relative;
+        }
         #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 100; flex-direction: column; cursor: pointer; }
         #overlay h1 { font-size: 3rem; margin: 0; color: #fbbf24; }
         #overlay p { font-size: 1.5rem; margin-top: 10px; }
 
+        .word {
+            opacity: 0.3; 
+            transition: opacity 0.1s;
+        }
+
+        .revealed {
+            opacity: 1; 
+            color: #fbbf24; 
+            text-shadow: 0 0 15px #fbbf24;
+        }
+        
+        /* 🖼️ Styles pour l'image de fin et les images supplémentaires */
+        #image-1, #image-2, #image-3, #image-4, #image-5, #image-6, #image-7 {
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 40%; 
+            max-height: 80vh;
+            opacity: 0; 
+            transition: opacity 0.5s ease-in-out; 
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.7);
+            pointer-events: none; 
+        }
+        #image-1.show, #image-2.show, #image-3.show, #image-4.show, #image-5.show, #image-6.show, #image-7.show {
+            opacity: 1;
+        }
+        
+        #image-1, #image-2, #image-3, #image-4, #image-5, #image-6, #image-7 {
+            z-index: 10;
+        }
+
+        /* Animations */
         @keyframes sway { from { transform: rotate(-2deg) scale(1.5); } to { transform: rotate(2deg) scale(1.5); } }
         @keyframes blink { 0% { opacity: 1; box-shadow: 0 0 10px currentColor; } 50% { opacity: 0.3; box-shadow: none; } 100% { opacity: 1; box-shadow: 0 0 10px currentColor; } }
+        
+        /* Neige et objets qui tombent */
         .snowflake { position: fixed; top: -10px; color: #fff; font-size: 1em; animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; z-index: 1; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
         @keyframes fall { to { transform: translateY(105vh); } }
         .falling-item { position: fixed; top: -50px; font-size: 2em; animation: fallAndSway linear infinite; z-index: 2; opacity: 0; }
@@ -80,7 +149,7 @@
     </div>
 
     <div id="sleigh-container" class="sleigh-hidden">
-        🦌🦌🦌🎅 sled
+        🦌🦌🦌🎅 
     </div>
 
     <div id="main-content">
@@ -93,7 +162,7 @@
                 <div class="trunk"></div>
             </div>
         </div>
-    
+        
         <div id="lyrics-container"></div>
     </div>
 
@@ -101,29 +170,128 @@
         <source src="last-christmas.mp3" type="audio/mpeg">
         Votre navigateur ne supporte pas l'audio.
     </audio>
+    
+    <img id="image-1" src="chien.jpg" alt="Image Chien">
+    
+    <img id="image-2" src="elise%20L.jpg" class="extra-image" alt="Image Elise L">
+    <img id="image-3" src="elise%20M.jpg" class="extra-image" alt="Image Elise M">
+    <img id="image-4" src="popo.jpg" class="extra-image" alt="Image Popo">
+    <img id="image-5" src="marine.jpg" class="extra-image" alt="Image Marine">
+    <img id="image-6" src="felise.jpg" class="extra-image" alt="Image Félise">
+    <img id="image-7" src="lolo.jpg" class="extra-image" alt="Image Lolo">
 
     <script>
         // 1. Configuration des paroles et du timing (en secondes)
-        const lyrics = [
-            { time: 28, text: "🎶 (Démarrage de la musique) 🎶" }, 
-            { time: 46, text: "Last Christmas," },
-            { time: 47.5, text: "I gave you my heart" },
-            { time: 51, text: "But the very next day" },
-            { time: 53, text: "You gave it away" },
-            { time: 56, text: "This year, to save me from tears" },
-            { time: 60, text: "I'll give it to someone special." },
-            { time: 63, text: "Last Christmas..." }, 
-            { time: 66, text: "I gave you my heart..." },
+        const lyricsData = [
+            { time: 28, text: "🎶 reste jusqu'a la fin :) 🎶" }, 
+            { time: 46, words: [
+                { time: 46.0, text: "Last" },
+                { time: 46.5, text: "Christmas," },
+                { time: 47.5, text: "I" },
+                { time: 47.7, text: "gave" },
+                { time: 47.9, text: "you" },
+                { time: 48.1, text: "my" },
+                { time: 48.3, text: "heart" },
+            ]},
+            { time: 50.8, words: [
+                { time: 50.8, text: "But" },
+                { time: 51.1, text: "the" },
+                { time: 51.3, text: "very" },
+                { time: 51.6, text: "next" },
+                { time: 51.9, text: "day" },
+            ]},
+            { time: 52.9, words: [
+                { time: 52.9, text: "You" },
+                { time: 53.1, text: "gave" },
+                { time: 53.3, text: "it" },
+                { time: 53.5, text: "away" },
+            ]},
+            { time: 55.9, words: [
+                { time: 55.9, text: "This" },
+                { time: 56.1, text: "year," },
+                { time: 56.4, text: "to" },
+                { time: 56.7, text: "save" },
+                { time: 57.0, text: "me" },
+                { time: 57.2, text: "from" },
+                { time: 57.5, text: "tears" },
+            ]},
+            { time: 59.8, words: [
+                { time: 59.8, text: "I'll" },
+                { time: 60.1, text: "give" },
+                { time: 60.3, text: "it" },
+                { time: 60.5, text: "to" },
+                { time: 60.7, text: "someone" },
+                { time: 61.2, text: "special." },
+            ]},
+            { time: 61.3, sequence: [
+                // ❗ NOUVEAUX DÉLAIS (4000ms = 4 secondes)
+                { id: "image-2", delay: 0 },         // 61.3s : Image Elise L
+                { id: "image-3", delay: 4000 },      // 65.3s : Image Elise M
+                { id: "image-4", delay: 8000 },      // 69.3s : Image Popo
+                { id: "image-5", delay: 12000 },     // 73.3s : Image Marine
+                { id: "image-6", delay: 16000 },     // 77.3s : Image Félise
+                { id: "image-7", delay: 20000 },     // 81.3s : Image Lolo
+                { id: "image-1", delay: 24000 },     // 85.3s : Image Chien (Dernière image)
+            ]},
+            { time: 89.8, text: "joyeux Noel les pouffiasses <3 <3" }, 
         ];
 
         const audio = document.getElementById('audio-player');
         const lyricsContainer = document.getElementById('lyrics-container');
         const overlay = document.getElementById('overlay');
-        const sleighContainer = document.getElementById('sleigh-container'); // NOUVEAU
+        const sleighContainer = document.getElementById('sleigh-container');
         
-        const startTime = 28; // Démarre la lecture à 28 secondes
+        // 🖼️ RÉFÉRENCES D'IMAGES MISES À JOUR (7 images)
+        const sequenceImageIds = ["image-1", "image-2", "image-3", "image-4", "image-5", "image-6", "image-7"];
+        
+        const startTime = 28; 
 
-        // 2. Démarrage au clic
+        // Variables de suivi
+        let currentLineIndex = -1;
+        let currentWordIndex = -1;
+        let imageTimer = null; 
+        let currentSequenceIndex = -1; // Index de l'image actuellement affichée
+
+        // Fonction pour gérer l'affichage séquentiel des images
+        function displayImageSequence(sequence) {
+            currentSequenceIndex = -1; 
+            
+            sequence.forEach((item) => {
+                let currentItemIndex = sequenceImageIds.indexOf(item.id);
+
+                setTimeout(() => {
+                    // Cacher l'image précédente (si elle existe)
+                    if (currentSequenceIndex >= 0) {
+                        const prevId = sequenceImageIds[currentSequenceIndex];
+                        const prevImage = document.getElementById(prevId);
+                        if(prevImage) prevImage.classList.remove('show');
+                    }
+                    
+                    // Afficher l'image actuelle
+                    const currentImage = document.getElementById(item.id);
+                    if (currentImage) {
+                        // Cacher toutes les images d'abord, pour la propreté
+                        sequenceImageIds.forEach(id => document.getElementById(id).classList.remove('show'));
+                        
+                        // Afficher et mettre au-dessus l'image actuelle
+                        currentImage.classList.add('show');
+                        currentImage.style.zIndex = 11;
+
+                        currentSequenceIndex = currentItemIndex;
+                    }
+
+                }, item.delay);
+            });
+            
+            // Cacher toutes les images après la fin de la séquence d'images (3 secondes après la dernière image du chien)
+            const finalDelay = sequence[sequence.length - 1].delay + 3000;
+            setTimeout(() => {
+                sequenceImageIds.forEach(id => document.getElementById(id).classList.remove('show'));
+            }, finalDelay);
+        }
+
+
+        // 2. Démarrage au clic (inchangé)
         overlay.addEventListener('click', () => {
             overlay.style.opacity = '0';
             setTimeout(() => overlay.style.display = 'none', 500);
@@ -133,7 +301,7 @@
             audio.play()
                 .then(() => {
                     console.log("Lecture audio démarrée avec succès.");
-                    launchSleighAnimation(); // NOUVEAU: Lance l'animation du traîneau
+                    launchSleighAnimation(); 
                 })
                 .catch(error => {
                     console.error("Échec de la lecture audio (Erreur Autoplay ?):", error);
@@ -147,36 +315,105 @@
             createFallingItems(30); 
         });
 
-        // 3. NOUVEAU: Fonction pour lancer le traîneau
+        // 3. Fonction pour lancer le traîneau (inchangée)
         function launchSleighAnimation() {
-            // Fait apparaître le traîneau
             sleighContainer.style.opacity = 1;
-            
-            // Applique l'animation CSS (durée 5s pour une traversée rapide)
             sleighContainer.style.animation = 'flyAcross 10s linear forwards'; 
-            
-            // Masque le traîneau après l'animation pour le réinitialiser
             sleighContainer.addEventListener('animationend', () => {
                 sleighContainer.style.opacity = 0;
                 sleighContainer.style.animation = 'none';
-                // OPTIONNEL: Relancez l'animation après un certain délai si vous voulez qu'il repasse
-                setTimeout(launchSleighAnimation, 10000); // Repasse toutes les 30 secondes
-            }, { once: true }); // S'exécute une seule fois
+                setTimeout(launchSleighAnimation, 10000); 
+            }, { once: true }); 
         }
         
-        // 4. Synchronisation des paroles (inchangée)
+        // 4. Synchronisation des paroles
         audio.addEventListener('timeupdate', () => {
             const currentTime = audio.currentTime;
-            const currentLine = lyrics.slice().reverse().find(line => currentTime >= line.time);
+            let lineChanged = false;
+
+            // 4a. Déterminer la ligne actuelle
+            const nextLineIndex = lyricsData.findIndex((line, index) => 
+                (index === lyricsData.length - 1 || currentTime < lyricsData[index + 1].time) && currentTime >= line.time
+            );
+
+            if (nextLineIndex !== currentLineIndex) {
+                currentLineIndex = nextLineIndex;
+                currentWordIndex = -1; 
+                lineChanged = true;
+                
+                // Annuler le timer et cacher TOUTES les images si on change de ligne
+                if (imageTimer) {
+                    clearTimeout(imageTimer);
+                    imageTimer = null;
+                }
+                sequenceImageIds.forEach(id => document.getElementById(id).classList.remove('show'));
+                lyricsContainer.style.opacity = '1'; 
+            }
+
+            const currentLine = lyricsData[currentLineIndex];
 
             if (currentLine) {
-                if (lyricsContainer.innerText !== currentLine.text) {
-                    lyricsContainer.innerText = currentLine.text;
+                // 4b. AFFICHAGE DE LA SÉQUENCE D'IMAGES
+                if (currentLine.sequence && lineChanged) {
+                    lyricsContainer.innerHTML = ""; // Efface les paroles
+                    lyricsContainer.style.opacity = '0'; // On cache les paroles pendant les images
+                    displayImageSequence(currentLine.sequence);
                 }
+                // 4c. AFFICHAGE SIMPLE (pour le message final)
+                else if (currentLine.text) {
+                    if (lineChanged || lyricsContainer.innerHTML === "") {
+                        // Cacher toutes les images avant d'afficher le texte final
+                        sequenceImageIds.forEach(id => document.getElementById(id).classList.remove('show'));
+
+                        lyricsContainer.innerHTML = currentLine.text;
+                        lyricsContainer.style.color = '#fff';
+                        lyricsContainer.style.textShadow = '0 0 10px rgba(255,255,255,0.5)';
+                        lyricsContainer.style.opacity = '1'; // Réafficher les paroles
+                    }
+                } 
+                // 4d. AFFICHAGE MOT PAR MOT (inchangé)
+                else if (currentLine.words) {
+                    const words = currentLine.words;
+
+                    if (lineChanged) {
+                        lyricsContainer.style.color = '#fff'; 
+                        lyricsContainer.style.textShadow = '0 0 10px rgba(255,255,255,0.5)';
+                        
+                        lyricsContainer.innerHTML = words.map(word => 
+                            `<span class="word">${word.text}</span>`
+                        ).join(' ');
+                    }
+
+                    const nextWordIndex = words.slice().reverse().findIndex(word => currentTime >= word.time);
+                    const actualNextWordIndex = nextWordIndex === -1 ? -1 : words.length - 1 - nextWordIndex;
+
+                    if (actualNextWordIndex !== currentWordIndex) {
+                        currentWordIndex = actualNextWordIndex;
+                        const wordSpans = lyricsContainer.querySelectorAll('.word');
+
+                        wordSpans.forEach((span, index) => {
+                            if (index <= currentWordIndex) {
+                                span.classList.add('revealed');
+                            } else {
+                                span.classList.remove('revealed');
+                            }
+                        });
+                    }
+                }
+            } else {
+                // Rien à afficher
             }
         });
 
-        // 5. Générateur de neige amélioré (inchangé)
+
+        // Gérer la fin de l'audio 
+        audio.addEventListener('ended', () => {
+            sequenceImageIds.forEach(id => document.getElementById(id).classList.remove('show'));
+            lyricsContainer.style.opacity = '0';
+            lyricsContainer.innerHTML = "";
+        });
+
+        // 5. Générateur de neige et objets qui tombent (inchangés)
         function createSnow(count) {
             for(let i=0; i<count; i++) {
                 const snow = document.createElement('div');
@@ -191,7 +428,6 @@
             }
         }
 
-        // 6. Générateur de cadeaux qui tombent (inchangé)
         const fallingEmojis = ['🎁', '🎄', '🎅', '🔔', '✨'];
         function createFallingItems(count) {
             for(let i=0; i<count; i++) {
