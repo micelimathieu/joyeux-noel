@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joyeux Noël !</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a; 
+            color: #fff;
+            font-family: 'Mountains of Christmas', cursive;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* --- NOUVEAU: Le Traîneau --- */
+        #sleigh-container {
+            position: absolute;
+            top: 5vh; /* Position verticale en haut de l'écran */
+            left: -100vw; /* Position de départ hors écran à gauche */
+            font-size: 3em;
+            white-space: nowrap;
+            /* Z-index 9: Devant la neige (1), derrière le contenu principal (10) */
+            z-index: 9; 
+            animation: none; /* L'animation est démarrée par JS */
+        }
+        
+        @keyframes flyAcross {
+            0% { transform: translateX(0vw); } /* Départ hors écran à gauche */
+            100% { transform: translateX(200vw); } /* Arrivée hors écran à droite */
+        }
+        
+        /* Conteneur Flex pour Sapin et Paroles */
+        #main-content {
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 50px; 
+            padding: 0 5%;
+            box-sizing: border-box;
+            position: relative; 
+            z-index: 10;
+        }
+
+        /* ... Styles du Sapin, des Boules, des Paroles, et de l'Overlay (inchangés) ... */
+        .tree-wrapper { flex-shrink: 0; padding-bottom: 50px; }
+        .tree-container { position: relative; animation: sway 3s infinite ease-in-out alternate; transform: scale(1.5); }
+        .star { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 20px solid #fbbf24; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); filter: drop-shadow(0 0 10px #fbbf24); z-index: 10; }
+        .layer { width: 0; height: 0; border-left: solid transparent; border-right: solid transparent; border-bottom: solid #166534; position: absolute; left: 50%; transform: translateX(-50%); }
+        .layer-1 { border-left-width: 30px; border-right-width: 30px; border-bottom-width: 40px; top: 0; z-index: 3; }
+        .layer-2 { border-left-width: 50px; border-right-width: 50px; border-bottom-width: 60px; top: 20px; z-index: 2; }
+        .layer-3 { border-left-width: 70px; border-right-width: 70px; border-bottom-width: 80px; top: 50px; z-index: 1; }
+        .trunk { width: 20px; height: 30px; background: #451a03; position: absolute; top: 130px; left: 50%; transform: translateX(-50%); }
+        .bauble { width: 8px; height: 8px; border-radius: 50%; position: absolute; animation: blink 1s infinite step-end; }
+        .b1 { background: red; top: 35px; left: -10px; } .b2 { background: gold; top: 65px; left: 15px; animation-delay: 0.3s; } .b3 { background: red; top: 90px; left: -25px; animation-delay: 0.6s; }
+        #lyrics-container { font-size: 2.5rem; text-align: left; width: 40%; min-height: 80px; padding: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.5); transition: opacity 0.5s ease; opacity: 0; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 100; flex-direction: column; cursor: pointer; }
+        #overlay h1 { font-size: 3rem; margin: 0; color: #fbbf24; }
+        #overlay p { font-size: 1.5rem; margin-top: 10px; }
+
+        @keyframes sway { from { transform: rotate(-2deg) scale(1.5); } to { transform: rotate(2deg) scale(1.5); } }
+        @keyframes blink { 0% { opacity: 1; box-shadow: 0 0 10px currentColor; } 50% { opacity: 0.3; box-shadow: none; } 100% { opacity: 1; box-shadow: 0 0 10px currentColor; } }
+        .snowflake { position: fixed; top: -10px; color: #fff; font-size: 1em; animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; z-index: 1; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        @keyframes fall { to { transform: translateY(105vh); } }
+        .falling-item { position: fixed; top: -50px; font-size: 2em; animation: fallAndSway linear infinite; z-index: 2; opacity: 0; }
+        @keyframes fallAndSway { 0% { transform: translate(0, -10vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(var(--end-x), 105vh) rotate(var(--end-rotation)); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <h1>🎁</h1>
+        <p>Cliquez pour ouvrir votre carte</p>
+    </div>
+
+    <div id="sleigh-container" class="sleigh-hidden">
+        🦌🦌🦌🎅 sled
+    </div>
+
+    <div id="main-content">
+        <div class="tree-wrapper">
+            <div class="tree-container">
+                <div class="star"></div>
+                <div class="layer layer-1"><div class="bauble b1"></div></div>
+                <div class="layer layer-2"><div class="bauble b2"></div></div>
+                <div class="layer layer-3"><div class="bauble b3"></div></div>
+                <div class="trunk"></div>
+            </div>
+        </div>
+    
+        <div id="lyrics-container"></div>
+    </div>
+
+    <audio id="audio-player">
+        <source src="last-christmas.mp3" type="audio/mpeg">
+        Votre navigateur ne supporte pas l'audio.
+    </audio>
+
+    <script>
+        // 1. Configuration des paroles et du timing (en secondes)
+        const lyrics = [
+            { time: 28, text: "🎶 (Démarrage de la musique) 🎶" }, 
+            { time: 46, text: "Last Christmas," },
+            { time: 47.5, text: "I gave you my heart" },
+            { time: 51, text: "But the very next day" },
+            { time: 53, text: "You gave it away" },
+            { time: 56, text: "This year, to save me from tears" },
+            { time: 60, text: "I'll give it to someone special." },
+            { time: 63, text: "Last Christmas..." }, 
+            { time: 66, text: "I gave you my heart..." },
+        ];
+
+        const audio = document.getElementById('audio-player');
+        const lyricsContainer = document.getElementById('lyrics-container');
+        const overlay = document.getElementById('overlay');
+        const sleighContainer = document.getElementById('sleigh-container'); // NOUVEAU
+        
+        const startTime = 28; // Démarre la lecture à 28 secondes
+
+        // 2. Démarrage au clic
+        overlay.addEventListener('click', () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 500);
+            
+            audio.currentTime = startTime;
+
+            audio.play()
+                .then(() => {
+                    console.log("Lecture audio démarrée avec succès.");
+                    launchSleighAnimation(); // NOUVEAU: Lance l'animation du traîneau
+                })
+                .catch(error => {
+                    console.error("Échec de la lecture audio (Erreur Autoplay ?):", error);
+                    if (error.name === "NotAllowedError") {
+                        alert("Le navigateur a bloqué le son. Veuillez cliquer à nouveau.");
+                    }
+                });
+            
+            lyricsContainer.style.opacity = '1';
+            createSnow(100); 
+            createFallingItems(30); 
+        });
+
+        // 3. NOUVEAU: Fonction pour lancer le traîneau
+        function launchSleighAnimation() {
+            // Fait apparaître le traîneau
+            sleighContainer.style.opacity = 1;
+            
+            // Applique l'animation CSS (durée 5s pour une traversée rapide)
+            sleighContainer.style.animation = 'flyAcross 10s linear forwards'; 
+            
+            // Masque le traîneau après l'animation pour le réinitialiser
+            sleighContainer.addEventListener('animationend', () => {
+                sleighContainer.style.opacity = 0;
+                sleighContainer.style.animation = 'none';
+                // OPTIONNEL: Relancez l'animation après un certain délai si vous voulez qu'il repasse
+                setTimeout(launchSleighAnimation, 10000); // Repasse toutes les 30 secondes
+            }, { once: true }); // S'exécute une seule fois
+        }
+        
+        // 4. Synchronisation des paroles (inchangée)
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            const currentLine = lyrics.slice().reverse().find(line => currentTime >= line.time);
+
+            if (currentLine) {
+                if (lyricsContainer.innerText !== currentLine.text) {
+                    lyricsContainer.innerText = currentLine.text;
+                }
+            }
+        });
+
+        // 5. Générateur de neige amélioré (inchangé)
+        function createSnow(count) {
+            for(let i=0; i<count; i++) {
+                const snow = document.createElement('div');
+                snow.className = 'snowflake';
+                snow.innerHTML = '❄';
+                snow.style.left = Math.random() * 100 + 'vw';
+                snow.style.animationDuration = Math.random() * 8 + 5 + 's'; 
+                snow.style.animationDelay = Math.random() * 5 + 's'; 
+                snow.style.opacity = Math.random();
+                snow.style.fontSize = Math.random() * 15 + 10 + 'px'; 
+                document.body.appendChild(snow);
+            }
+        }
+
+        // 6. Générateur de cadeaux qui tombent (inchangé)
+        const fallingEmojis = ['🎁', '🎄', '🎅', '🔔', '✨'];
+        function createFallingItems(count) {
+            for(let i=0; i<count; i++) {
+                const item = document.createElement('div');
+                item.className = 'falling-item';
+                item.innerHTML = fallingEmojis[Math.floor(Math.random() * fallingEmojis.length)];
+                
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.animationDuration = Math.random() * 10 + 8 + 's'; 
+                item.style.animationDelay = Math.random() * 8 + 's'; 
+                item.style.fontSize = Math.random() * 20 + 20 + 'px';
+                
+                item.style.setProperty('--end-x', (Math.random() * 40 - 20) + 'vw'); 
+                item.style.setProperty('--end-rotation', (Math.random() * 720 - 360) + 'deg'); 
+                
+                document.body.appendChild(item);
+            }
+        }
+    </script>
+</body>
+</html>
